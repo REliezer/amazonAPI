@@ -1,0 +1,15 @@
+secrets/*.json
+*.env
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+*.log
+*.pid
+*.egg-info/
+*.egg
+dist/
+.vscode
+venv/*
