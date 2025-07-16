@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from contextlib import asynccontextmanager
 
 from controllers.firebase import register_user_firebase, login_user_firebase
-from controllers.productscatalog import get_products_catalog, create_serie
+from controllers.productscatalog import get_products_catalog, create_product
 
 from models.userregister import UserRegister
 from models.userlogin import UserLogin
@@ -20,11 +20,6 @@ logger = logging.getLogger(__name__)
 load_dotenv()
 
 telemetry_enabled = setup_simple_telemetry()
-if telemetry_enabled:
-    logger.info("Application Insights enabled")
-    from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
-else:
-    logger.warning("Application Insight disabled")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -40,12 +35,11 @@ app = FastAPI(
 )
 
 if telemetry_enabled:
-#    instrument_fastapi_app(app)
-    FastAPIInstrumentor.instrument_app(app)
-#    logger.info("Application Insights enabled")
+    instrument_fastapi_app(app)
+    logger.info("Application Insights enabled")
     logger.info("FastAPI Instrumented")
-#else:
-#    logger.warning("Application Insight disabled")
+else:
+    logger.warning("Application Insight disabled")
 
 @app.get("/health")
 async def health_check():
@@ -81,9 +75,9 @@ async def get_products() -> list[ProductsCatalog]:
 
 @app.post("/products", response_model=ProductsCatalog, status_code=201)
 @validateadmin
-async def create_new_series(request: Request, response: Response, series_data: ProductsCatalog) -> ProductsCatalog:
-    cs = await create_serie(series_data)
-    return cs
+async def create_new_series(request: Request, response: Response, product_data: ProductsCatalog) -> ProductsCatalog:
+    cp = await create_product(product_data)
+    return cp
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000, log_level="info")

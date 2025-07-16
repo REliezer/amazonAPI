@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 
 REDIS_URL = os.getenv("REDIS_CONNECTION_STRING")
 
+#Para obtener el cliente, para establecer la xonexion con Redis
 def get_redis_client():
     if not REDIS_URL:
         logger.error("La variable de entorno REDIS_CONNECTION_STRING no está definida.")
@@ -30,6 +31,7 @@ def get_redis_client():
         logger.error(f"Error connecting to Redis with Connection String: {e}")
         return None
 
+#Obtener cache mediante el cliente y key
 def get_from_cache(redis_client, cache_key: str) -> Optional[Any]:
     if not redis_client:
         return None
@@ -47,7 +49,7 @@ def get_from_cache(redis_client, cache_key: str) -> Optional[Any]:
 
     return None
 
-
+#Para eliminar una llave que ya se encuentra dentro de la BD, mediante el cliente y key
 def delete_cache(redis_client, cache_key: str) -> bool:
     if not redis_client:
         logger.info("ℹ️ Redis not available - cache deletion skipped")
@@ -65,7 +67,7 @@ def delete_cache(redis_client, cache_key: str) -> bool:
         logger.warning(f"⚠️ Failed to delete cache key '{cache_key}': {str(e)}")
         return False
 
-
+#Para crear una nueva llave/valor
 def store_in_cache(redis_client, cache_key: str, data: list[dict], expiration: int) -> None:
     if not redis_client:
         logger.info("Redis not available - running without cache")
