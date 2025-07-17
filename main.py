@@ -7,6 +7,7 @@ from contextlib import asynccontextmanager
 
 from controllers.firebase import register_user_firebase, login_user_firebase
 from controllers.productscatalog import get_products_catalog, create_product, get_products_by_category
+from controllers.categories import get_category_name_by_id, get_count_products_by_category
 
 from models.userregister import UserRegister
 from models.userlogin import UserLogin
@@ -14,7 +15,6 @@ from models.productscatalog import ProductsCatalog
 
 from utils.security import validateadmin
 from utils.telemetry import setup_simple_telemetry, instrument_fastapi_app
-from utils.consult_db import get_category_name_from_db, get_count_products_by_category
 
 logging.basicConfig( level=logging.INFO )
 logger = logging.getLogger(__name__)
@@ -89,7 +89,7 @@ async def get_products_by_category_id(category_id: int) -> list[ProductsCatalog]
 @app.get("/category/name/")
 @validateadmin
 async def get_category_name(request: Request, response: Response, category_id: int):
-    category_name = await get_category_name_from_db(category_id)
+    category_name = await get_category_name_by_id(category_id)
     return category_name
 
 @app.get("/category/count")

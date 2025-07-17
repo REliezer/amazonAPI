@@ -6,7 +6,8 @@ from fastapi import HTTPException
 
 from utils.database import execute_query_json
 from utils.redis_cache import get_redis_client, store_in_cache, get_from_cache, delete_cache
-from utils.consult_db import get_category_name_from_db
+
+from controllers.categories import get_category_name_by_id
 
 from models.productscatalog import ProductsCatalog
 
@@ -71,7 +72,7 @@ async def create_product( product_data: ProductsCatalog ) -> ProductsCatalog:
     cache_deleted = delete_cache( redis_client, PRODUCTS_CACHE_KEY )
 
     #Obtener el nombre de la categoria del nuevo producto para eliminar tambien su cache
-    category_name = await get_category_name_from_db(product_data.category_id)
+    category_name = await get_category_name_by_id(product_data.category_id)
     cache_key = f"products:catalog:{category_name}"
 
     cache_deleted = delete_cache( redis_client, cache_key )
@@ -80,7 +81,7 @@ async def create_product( product_data: ProductsCatalog ) -> ProductsCatalog:
 
 async def get_products_by_category(category_id) -> list[ProductsCatalog]:
     #Obtener el nombre de la categoria
-    category_name = await get_category_name_from_db(category_id)
+    category_name = await get_category_name_by_id(category_id)
 
     cache_key = f"products:catalog:{category_name}"
     redis_client = get_redis_client()
