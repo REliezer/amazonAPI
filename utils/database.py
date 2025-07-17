@@ -33,14 +33,13 @@ async def get_db_connection():
          raise
 
 async def execute_query_json(sql_template, params=None, needs_commit=False):
-
     conn = None
     cursor = None
     try:
         conn = await get_db_connection()
         cursor = conn.cursor()
-        param_info = "(sin parámetros)" if not params else f"(con {len(params)} parámetros)"
-        logger.info(f"Ejecutando consulta {param_info}: {sql_template}")
+        #param_info = "(sin parámetros)" if not params else f"(con {len(params)} parámetros)"
+        #logger.info(f"Ejecutando consulta {param_info}: {sql_template}")
 
         if params:
             cursor.execute(sql_template, params)
@@ -75,6 +74,7 @@ async def execute_query_json(sql_template, params=None, needs_commit=False):
         raise Exception(f"Error ejecutando consulta: {str(e)}") from e
     except Exception as e:
         logger.error(f"Error inesperado durante la ejecución de la consulta: {str(e)}")
+        logger.error("ERROR", e)
         raise # Relanza el error inesperado
     finally:
         if cursor:
