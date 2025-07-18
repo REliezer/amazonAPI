@@ -3,14 +3,16 @@ import logging
 from dotenv import load_dotenv
 from azure.monitor.opentelemetry import configure_azure_monitor
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+from utils.keyvault import get_secret_by_name
 
 logger = logging.getLogger(__name__)
 
-def setup_simple_telemetry():
+async def setup_simple_telemetry():
     try:
         load_dotenv(override=True)
 
-        connection_string = os.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING")
+#        connection_string = os.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING")
+        connection_string = await get_secret_by_name("applicationinsights-connection-string")
 
         if not connection_string:
             logger.warning("Application Insights connection string not found")

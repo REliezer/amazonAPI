@@ -4,22 +4,28 @@ import pyodbc
 import logging
 import json
 
+from utils.keyvault import get_secret_by_name
 load_dotenv()
 
 # Configurar logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-driver = os.getenv('SQL_DRIVER')
-server = os.getenv('SQL_SERVER')
-database = os.getenv('SQL_DATABASE')
-username = os.getenv('SQL_USERNAME')
-password = os.getenv('SQL_PASSWORD')
-
-connection_string = f"DRIVER={driver};SERVER={server};DATABASE={database};UID={username};PWD={password}"
-
+#driver = os.getenv('SQL_DRIVER')
+#server = os.getenv('SQL_SERVER')
+#database = os.getenv('SQL_DATABASE')
+#username = os.getenv('SQL_USERNAME')
+#password = os.getenv('SQL_PASSWORD')
 
 async def get_db_connection():
+    driver = await get_secret_by_name('sql-driver')
+    server = await get_secret_by_name('sql-server')
+    database = await get_secret_by_name('sql-database')
+    username = await get_secret_by_name('sql-username')
+    password = await get_secret_by_name('sql-password')
+    
+    connection_string = f"DRIVER={driver};SERVER={server};DATABASE={database};UID={username};PWD={password}"
+
     try:
         logger.info(f"Intentando conectar a la base de datos...")
         conn = pyodbc.connect(connection_string, timeout=10)

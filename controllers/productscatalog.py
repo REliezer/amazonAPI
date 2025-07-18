@@ -17,7 +17,7 @@ PRODUCTS_CACHE_KEY = "products:catalog:all"
 CACHE_TTL = 1800
 
 async def get_products_catalog() -> list[ProductsCatalog]:
-    redis_client = get_redis_client()
+    redis_client = await get_redis_client()
     cached_data = get_from_cache( redis_client , PRODUCTS_CACHE_KEY )
     if cached_data:
         return [ProductsCatalog(**item) for item in cached_data]
@@ -68,7 +68,7 @@ async def create_product( product_data: ProductsCatalog ) -> ProductsCatalog:
         category_id=product_data.category_id
     )
 
-    redis_client = get_redis_client()
+    redis_client = await get_redis_client()
     cache_deleted = delete_cache( redis_client, PRODUCTS_CACHE_KEY )
 
     #Obtener el nombre de la categoria del nuevo producto para eliminar tambien su cache
@@ -84,7 +84,7 @@ async def get_products_by_category(category_id) -> list[ProductsCatalog]:
     category_name = await get_category_name_by_id(category_id)
 
     cache_key = f"products:catalog:{category_name}"
-    redis_client = get_redis_client()
+    redis_client = await get_redis_client()
     cached_data_category = get_from_cache( redis_client , cache_key )
     if cached_data_category:
         return [ProductsCatalog(**item) for item in cached_data_category]

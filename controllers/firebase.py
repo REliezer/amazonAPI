@@ -8,9 +8,10 @@ from fastapi import HTTPException
 from firebase_admin import credentials, auth as firebase_auth
 from dotenv import load_dotenv
 
-
 from utils.database import execute_query_json
 from utils.security import create_jwt_token
+from utils.keyvault import get_secret_by_name
+
 from models.userregister import UserRegister
 from models.userlogin import UserLogin
 
@@ -33,7 +34,7 @@ async def register_user_firebase(user: UserRegister) -> dict:
         )
 
     except Exception as e:
-        print(e)
+        logger.error(f"Error: {e}")
         raise HTTPException(
             status_code=400,
             detail=f"Error al registrar usuario: {e}"
@@ -57,7 +58,8 @@ async def register_user_firebase(user: UserRegister) -> dict:
 
 async def login_user_firebase(user: UserLogin):
     # Autenticar usuario con Firebase Authentication usando la API REST
-    api_key = os.getenv("FIREBASE_API_KEY")  # Reemplaza esto con tu apiKey de Firebase
+#    api_key = os.getenv("FIREBASE_API_KEY")  # Reemplaza esto con tu apiKey de Firebase
+    api_key = await get_secret_by_name("firebase-api-key")
     url = f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={api_key}"
     payload = {
         "email": user.email,
@@ -86,15 +88,16 @@ async def login_user_firebase(user: UserLogin):
     try:
         result_json = await execute_query_json(query, (user.email,), needs_commit=False)
         result_dict = json.loads(result_json)
+        jwt_token = await create_jwt_token(
+            result_dict[0]["firstName"],
+            result_dict[0]["lastName"],
+            user.email,
+            result_dict[0]["active"],
+            result_dict[0]["admin"],
+        )
         return {
             "message": "Usuario autenticado exitosamente",
-            "idToken": create_jwt_token(
-                result_dict[0]["firstName"],
-                result_dict[0]["lastName"],
-                user.email,
-                result_dict[0]["active"],
-                result_dict[0]["admin"],
-            )
+            "idToken": jwt_token
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

@@ -1,7 +1,4 @@
 import os
-import secrets
-import hashlib
-import base64
 import jwt
 
 from datetime import datetime, timedelta
@@ -10,12 +7,15 @@ from dotenv import load_dotenv
 from jwt import PyJWTError
 from functools import wraps
 
+from utils.keyvault import get_secret_by_name
+
 load_dotenv()
 
-SECRET_KEY = os.getenv("SECRET_KEY")
+#SECRET_KEY = os.getenv("SECRET_KEY")
 
 # Función para crear un JWT
-def create_jwt_token(firstName:str, lastName:str, email: str, active: bool, admin: bool):
+async def create_jwt_token(firstName:str, lastName:str, email: str, active: bool, admin: bool):
+    secret_key = await get_secret_by_name("jwt-secret-key")
     expiration = datetime.utcnow() + timedelta(hours=1)  # El token expira en 1 hora
     token = jwt.encode(
         {
@@ -27,7 +27,7 @@ def create_jwt_token(firstName:str, lastName:str, email: str, active: bool, admi
             "exp": expiration,
             "iat": datetime.utcnow()
         },
-        SECRET_KEY,
+        secret_key,
         algorithm="HS256"
     )
     return token
@@ -49,7 +49,8 @@ def validate(func):
 
 
         try:
-            payload = jwt.decode( token , SECRET_KEY , algorithms=["HS256"] )
+            secret_key = await get_secret_by_name("jwt-secret-key")
+            payload = jwt.decode( token , secret_key , algorithms=["HS256"] )
             email = payload.get("email")
             firstName = payload.get("firstName")
             lastName = payload.get("lastName")
@@ -92,7 +93,8 @@ def validateadmin(func):
 
 
         try:
-            payload = jwt.decode( token , SECRET_KEY , algorithms=["HS256"] )
+            secret_key = await get_secret_by_name("jwt-secret-key")
+            payload = jwt.decode( token , secret_key , algorithms=["HS256"] )
             email = payload.get("email")
             firstName = payload.get("firstName")
             lastName = payload.get("lastName")

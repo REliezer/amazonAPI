@@ -20,10 +20,18 @@ logging.basicConfig( level=logging.INFO )
 logger = logging.getLogger(__name__)
 load_dotenv()
 
-telemetry_enabled = setup_simple_telemetry()
+#telemetry_enabled = setup_simple_telemetry()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    telemetry_enabled = await setup_simple_telemetry()
+    if telemetry_enabled:
+        instrument_fastapi_app(app)
+        logger.info("Application Insights enabled")
+        logger.info("FastAPI Instrumented")
+    else:
+        logger.warning("Application Insight disabled")
+    
     logger.info("Starting API...")
     yield
     logger.info("Shutting down API...")
@@ -34,13 +42,6 @@ app = FastAPI(
     version="0.0.3",
     lifespan=lifespan
 )
-
-if telemetry_enabled:
-    instrument_fastapi_app(app)
-    logger.info("Application Insights enabled")
-    logger.info("FastAPI Instrumented")
-else:
-    logger.warning("Application Insight disabled")
 
 @app.get("/health")
 async def health_check():

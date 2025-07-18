@@ -4,22 +4,23 @@ import logging
 import redis
 from typing import Optional, Any
 from dotenv import load_dotenv
+from utils.keyvault import get_secret_by_name
 
 load_dotenv()
 
 logger = logging.getLogger(__name__)
 
-REDIS_URL = os.getenv("REDIS_CONNECTION_STRING")
-
-#Para obtener el cliente, para establecer la xonexion con Redis
-def get_redis_client():
-    if not REDIS_URL:
-        logger.error("La variable de entorno REDIS_CONNECTION_STRING no está definida.")
+#REDIS_URL = os.getenv("REDIS_CONNECTION_STRING")
+#Para obtener el cliente, para establecer la conexión con Redis
+async def get_redis_client():
+    redis_url = await get_secret_by_name('redis-connection-string')
+    if not redis_url:
+        logger.error("Redis connection string no encontrado en Key Vault.")
         return None
 
     try:
         client = redis.from_url(
-            REDIS_URL,
+            redis_url,
             decode_responses=True
         )
 

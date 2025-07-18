@@ -1,8 +1,10 @@
-fastapi==0.115.13
+fastapi==0.116.1
 uvicorn==0.34.3
 pyodbc==5.2.0
-firebase-admin==6.9.0
+firebase-admin==7.0.0
 python-dotenv==1.1.1
 azure-monitor-opentelemetry==1.6.10
-opentelemetry-instrumentation-fastapi==0.49b2
-redis==5.0.1
+opentelemetry-instrumentation-fastapi==0.52b1
+redis==6.2.0
+azure-keyvault-secrets==4.10.0
+azure-identity==1.23.1
