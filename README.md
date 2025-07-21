@@ -300,7 +300,7 @@ docker exec -it amazonapi-container bash
 ### Estructura de Respuestas
 
 ```json
-// Todos los productos /products
+//Todos los productos /products
 {
   "asin": "B08N5WRWNW",
   "title": "Echo Dot (4th Gen)",
@@ -311,7 +311,7 @@ docker exec -it amazonapi-container bash
   "category_id": 1
 }
 
-// Productos de una categoria /products/?category_id=12
+//Productos de una categoria /products/?category_id=12
 {
    "asin": "0804846332",
    "title": "Indonesian Batik Gift Wrapping Papers - 12 Sheets: 18 x 24 inch (45 x 61 cm) Wrapping Paper",
