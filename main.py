@@ -46,8 +46,8 @@ app = FastAPI(
 @app.get("/health")
 async def health_check():
     return {
-        "status": "healthy"
-        , "version": "0.0.1"
+        "status": "healthy",
+        "version": "0.1.0"
     }
 
 @app.get("/")
@@ -88,13 +88,11 @@ async def get_products_by_category_id(category_id: int) -> list[ProductsCatalog]
 
 #Otros endpoints
 @app.get("/category/name/")
-@validateadmin
 async def get_category_name(request: Request, response: Response, category_id: int):
     category_name = await get_category_name_by_id(category_id)
     return category_name
 
 @app.get("/category/count")
-@validateadmin
 async def get_count(request: Request, response: Response):
     return await get_count_products_by_category()
 
