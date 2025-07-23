@@ -42,12 +42,25 @@ Una API REST moderna desarrollada con FastAPI para la gestión de productos esti
    cd amazonAPI
    ```
 
-2. **Instala las dependencias**
+2. **Crear un ambiente virtual (opcional pero recomendado)**
+   ```bash
+   # Crear ambiente virtual
+   python -m venv venv
+   
+   # Activar el ambiente virtual
+   # En Windows:
+   .\venv\Scripts\activate
+   
+   # En macOS/Linux:
+   source venv/bin/activate
+   ```
+
+3. **Instala las dependencias**
    ```bash
    pip install -r requirements.txt
    ```
 
-3. **Configura las variables de entorno**
+4. **Configura las variables de entorno**
    Si usas Key Vault solo debes crear un archivo `.env` con:
    ```env
    # Key Vault URL
@@ -58,7 +71,7 @@ Una API REST moderna desarrollada con FastAPI para la gestión de productos esti
    OTEL_SERVER_VERSION=your_otel_server_version
    ```
 
-4. **Ejecuta la aplicación**
+5. **Ejecuta la aplicación**
    ```bash
    fastapi dev main.py
    ```
@@ -148,7 +161,7 @@ Si decides usar Azure Key Vault (recomendado para producción), necesitas config
 1. **Credenciales de Admin SDK**
    - Descarga el archivo de credenciales desde Firebase Console
    - Colócalo en `secrets/firebase-secret.json`
-   - O configúralo como variable de entorno `FIREBASE_CREDENTIALS`
+   - Tambien lo puedes configurar como variable de entorno `FIREBASE_CREDENTIALS` o como secret en Key Vault
 
 2. **API Key para autenticación**
    - Obtén la Web API Key desde Firebase Console
@@ -156,51 +169,84 @@ Si decides usar Azure Key Vault (recomendado para producción), necesitas config
 
 ### Base de Datos
 
-La API utiliza SQL Server con el esquema `amazon`. 
-   ```bash
+La API utiliza **SQL Server** con el esquema `amazon` para organizar todas las tablas.
+
+#### 📝 Setup de Base de Datos
+
+1. **Crear el esquema principal**:
+   ```sql
    CREATE SCHEMA amazon;
    ```
 
-**Tablas principales:**
-- `amazon.products` - Catálogo de productos con campos como ASIN, título, precio, rating, etc.
+2. **Crear las tablas en orden** (respetando las dependencias de claves foráneas):
+
+   **Tabla de categorías** (debe crearse primero):
    ```sql
-      CREATE TABLE amazon.products (
-         asin VARCHAR(255) PRIMARY KEY,
-         title VARCHAR(255),
-         imgUrl VARCHAR(255),
-         productURL VARCHAR(255),
-         stars FLOAT,
-         price FLOAT,
-         category_id INT REFERENCES amazon.categories(id)
-      );
-   ```
-- `amazon.categories` - Categorías de productos
-   ```sql
-      CREATE TABLE amazon.categories (
-         id INT IDENTITY(1,1) PRIMARY KEY,
-         category_name VARCHAR(255)
-      );
-   ```
-- `amazon.users` - Información de usuarios (sincronizado con Firebase)
-   ```sql
-      CREATE TABLE amazon.users (
-         id INT IDENTITY(1,1) PRIMARY KEY,
-         email VARCHAR(255) UNIQUE NOT NULL,
-         password VARCHAR(255) NOT NULL,
-         firstName VARCHAR(255),
-         lastName VARCHAR(255),    
-         active bit DEFAULT 1,
-         admin bit DEFAULT 0
-      );
+   CREATE TABLE amazon.categories (
+       id INT IDENTITY(1,1) PRIMARY KEY,
+       category_name VARCHAR(255) NOT NULL
+   );
    ```
 
-**Origen de los datos:**
-- Los datos para la base de datos fueron obtenidos de un dataset público de productos de Amazon obtenidos de Kaggle.
-- Se utilizaron pipelines de datos automatizados para cargar y procesar la información en las tablas correspondientes
-- Los pipelines incluyen procesos de limpieza, validación y transformación de datos antes de la inserción
+   **Tabla de productos** (depende de categories):
+   ```sql
+   CREATE TABLE amazon.products (
+       asin VARCHAR(255) PRIMARY KEY,
+       title VARCHAR(500) NOT NULL,
+       imgUrl VARCHAR(500),
+       productURL VARCHAR(500),
+       stars FLOAT CHECK (stars >= 0 AND stars <= 5),
+       price FLOAT CHECK (price >= 0),
+       category_id INT NOT NULL,
+       FOREIGN KEY (category_id) REFERENCES amazon.categories(id)
+   );
+   ```
 
-**Procedimientos almacenados:**
-- `amazon.users_insert` - Para registrar nuevos usuarios
+   **Tabla de usuarios** (sincronizada con Firebase):
+   ```sql
+   CREATE TABLE amazon.users (
+       id INT IDENTITY(1,1) PRIMARY KEY,
+       email VARCHAR(255) UNIQUE NOT NULL,
+       firstName VARCHAR(255) NOT NULL,
+       lastName VARCHAR(255) NOT NULL,
+       active BIT DEFAULT 1,
+       admin BIT DEFAULT 0,
+   );
+   ```
+
+3. **Crear procedimientos almacenados**:
+   ```sql
+   CREATE PROCEDURE amazon.users_insert
+       @email VARCHAR(255),
+       @firstName VARCHAR(255),
+       @lastName VARCHAR(255),
+       @active BIT = 1,
+       @admin BIT = 0
+   AS
+   BEGIN
+       INSERT INTO amazon.users (email, firstName, lastName, active, admin)
+       VALUES (@email, @firstName, @lastName, @active, @admin);
+       
+       SELECT SCOPE_IDENTITY() as user_id;
+   END;
+   ```
+
+#### 📊 Origen de los Datos
+
+- **Dataset**: Los datos provienen de un dataset público de productos de Amazon obtenidos de **Kaggle**
+- **Procesamiento**: Se utilizaron **pipelines automatizados** con las siguientes etapas:
+  - 🧠 **Limpieza**: Remoción de datos duplicados y valores nulos
+  - ✅ **Validación**: Verificación de formatos de URL, precios y ratings
+  - 🔄 **Transformación**: Normalización de categorías y formateo de campos
+  - 📥 **Carga**: Inserción ordenada respetando dependencias
+
+#### 📋 Estructura de Tablas
+
+| Tabla | Registros Aprox. | Descripción |
+|-------|------------------|-------------|
+| `categories` | ~248 | Categorías de productos (Hardware, Kids' Electronics, Cat Supplies, entre otras.) |
+| `products` | ~1M+ | Catálogo completo de productos Amazon |
+| `users` | Variable | Usuarios registrados (sincronizado con Firebase) |
 
 ## 🏗️ Infraestructura como Código
 
@@ -322,7 +368,70 @@ docker exec -it amazonapi-container bash
    "category_id": 12
 }
 ```
+## 🧪 Pruebas con Postman
+
+### Colección de Pruebas
+
+Se incluye una colección completa de Postman para probar todos los endpoints de la API:
+
+**📁 Archivo**: `EXPERTOS PROD.postman_collection.json`
+
+### Importar la Colección
+
+1. **Abre Postman**
+2. **Importa la colección**:
+   - Clic en "Import" 
+   - Selecciona el archivo `EXPERTOS PROD.postman_collection.json`
+   - Confirma la importación
+
+3. **Configura las variables**:
+   - Ve a la colección → pestaña "Variables"
+   - Actualiza la variable `domain` con tu URL:
+     - **Local**: `http://localhost:8000`
+     - **Producción**: `https://tu-api-domain.com`
+
+### Pruebas Incluidas
+
+La colección incluye pruebas para:
+
+#### 🔐 Autenticación
+- **POST** `/signup` - Registro de nuevos usuarios
+- **POST** `/login` - Inicio de sesión y obtención de JWT
+
+#### 📦 Productos
+- **GET** `/products` - Listar todos los productos
+- **POST** `/products` - Crear producto (requiere token admin)
+- **GET** `/products/?category_id={id}` - Productos por categoría
+
+#### 📂 Categorías
+- **GET** `/category/name/?category_id={id}` - Obtener nombre de categoría
+- **GET** `/category/count` - Conteo de productos por categoría
+
+#### 🏥 Sistema
+- **GET** `/health` - Health check de la API
+- **GET** `/` - Endpoint raíz
+
+### Variables de Entorno
+
+La colección utiliza las siguientes variables:
+
+| Variable | Descripción | Ejemplo |
+|----------|-------------|---------|
+| `domain` | URL base de la API | `http://localhost:8000` |
+| `token` | JWT token (se obtiene automáticamente al hacer login) | `eyJ0eXAiOiJKV1Q...` |
+
+### Flujo de Pruebas Recomendado
+
+1. **🏥 Health Check**: Verifica que la API esté funcionando
+2. **👤 Registro**: Crea un usuario nuevo
+3. **🔑 Login**: Inicia sesión para obtener token JWT
+4. **📂 Categorías**: Prueba los endpoints de categorías
+5. **📦 Productos**: Prueba listado y filtrado de productos
+6. **⚙️ Admin**: Prueba creación de productos (requiere usuario admin)
+
+### Notas Importantes
+
+- 👑 Para probar endpoints de admin, necesitas un usuario con `admin: true`
+- 🌐 Cambiar la variable `domain` según el entorno (local/producción)
 
 ---
-
-**Desarrollado con ❤️ para el curso de Expertos UNAH**

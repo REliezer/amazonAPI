@@ -20,7 +20,7 @@ async def get_category_name_by_id(category_id: int) -> str:
     
     #Formatear el nombre de la categoria antes de retornarlo
     name = await format_name_category(data[0]['category_name'])
-    
+
     return name
 
 async def get_count_products_by_category() -> list[dict]:

@@ -1,0 +1,307 @@
+{
+	"info": {
+		"_postman_id": "e2383192-92a0-407d-9799-bd3e96936574",
+		"name": "EXPERTOS API + CACHE",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "24321998"
+	},
+	"item": [
+		{
+			"name": "Categorias",
+			"item": [
+				{
+					"name": "category_name",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{domain}}/category/name/?category_id=100",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"category",
+								"name",
+								""
+							],
+							"query": [
+								{
+									"key": "category_id",
+									"value": "100"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "category_count",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{domain}}/category/count",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"category",
+								"count"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Sistema",
+			"item": [
+				{
+					"name": "root",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmaXJzdG5hbWUiOiJSb2RyaWdvIiwibGFzdG5hbWUiOiJGdW5lcyIsImVtYWlsIjoiYXNkQGVtYWlsLmhuIiwiYWN0aXZlIjp0cnVlLCJleHAiOjE3NTIxNjkzODgsImlhdCI6MTc1MjE2NTc4OH0.BiCYjgjUkt9zuxO0ZG3VXCFHwvgA92qJ1FO2BwAck6s",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{domain}}/",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Estado API",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}/health",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"health"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Autenticación",
+			"item": [
+				{
+					"name": "SignUp",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"string\",\r\n    \"password\": \"string\",\r\n    \"firstName\": \"string\",\r\n    \"lastName\": \"string\",\r\n    \"admin\": true,\r\n    \"active\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}/signup",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"\",\r\n    \"password\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}/login",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Productos",
+			"item": [
+				{
+					"name": "products",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"rodrigofunes@hotmail.es\",\r\n    \"password\": \"Rodrigo!0909\"\r\n}"
+						},
+						"url": {
+							"raw": "{{domain}}/products",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Product",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmaXJzdE5hbWUiOiJSb2RyaWdvIiwibGFzdE5hbWUiOiJGXHUwMGZhbmVzIiwiZW1haWwiOiJyb2RyaWdvZnVuZXNAaG90bWFpbC5lcyIsImFjdGl2ZSI6dHJ1ZSwiYWRtaW4iOnRydWUsImV4cCI6MTc1Mjg2Nzg2MCwiaWF0IjoxNzUyODY0MjYwfQ.f8gEntyB3pQ6crzAZ_LJihLeCqIkQ7ZExdEoAN5a3gc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"asin\": \"Prod-91\",\r\n  \"title\": \"New Product 91\",\r\n  \"imgUrl\": \"string\",\r\n  \"productURL\": \"string\",\r\n  \"stars\": 0,\r\n  \"price\": 50,\r\n  \"category_id\": 91\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}/products",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Product by CatID",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmaXJzdE5hbWUiOiJSb2RyaWdvIiwibGFzdE5hbWUiOiJGXHUwMGZhbmVzIiwiZW1haWwiOiJyb2RyaWdvZnVuZXNAaG90bWFpbC5lcyIsImFjdGl2ZSI6dHJ1ZSwiYWRtaW4iOmZhbHNlLCJleHAiOjE3NTI3MDk5MTgsImlhdCI6MTc1MjcwNjMxOH0.g0e161egGsIYapuBBSpCp6H5kyQpFE4T62Vr-4X8WaE",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"asin\": \"UNAH2025-03\",\r\n  \"title\": \"Experts System\",\r\n  \"imgUrl\": \"string\",\r\n  \"productURL\": \"string\",\r\n  \"stars\": 0,\r\n  \"price\": 12,\r\n  \"category_id\": 8\r\n}"
+						},
+						"url": {
+							"raw": "{{domain}}/products/?category_id=91",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"products",
+								""
+							],
+							"query": [
+								{
+									"key": "category_id",
+									"value": "91"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "domain",
+			"value": "https://api-amazonproducts-dev.azurewebsites.net",
+			"type": "string"
+		}
+	]
+}
