@@ -22,7 +22,7 @@ async def get_products_catalog() -> list[ProductsCatalog]:
     if cached_data:
         return [ProductsCatalog(**item) for item in cached_data]
 
-    query = "select top 20000 * from amazon.products"
+    query = "select top 40000 * from amazon.products"
     result = await execute_query_json(query)
     dict = json.loads(result)
     if not dict:
@@ -83,7 +83,9 @@ async def get_products_by_category(category_id) -> list[ProductsCatalog]:
     #Obtener el nombre de la categoria
     category_name = await get_category_name_by_id(category_id)
 
+    #Generar la key de forma dinamica usando el nombre de la categoria consultada previamente formateada
     cache_key = f"products:catalog:{category_name}"
+    
     redis_client = await get_redis_client()
     cached_data_category = get_from_cache( redis_client , cache_key )
     if cached_data_category:

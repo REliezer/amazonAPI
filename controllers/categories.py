@@ -4,6 +4,8 @@ import logging
 from fastapi import HTTPException
 
 from utils.database import execute_query_json
+from utils.format_name_category import format_name_category
+
 from models.productscategory import ProductsCategories
 
 logger = logging.getLogger(__name__)
@@ -16,7 +18,10 @@ async def get_category_name_by_id(category_id: int) -> str:
     if not data:
         raise HTTPException(status_code=404, detail="Category not found")
     
-    return data[0]['category_name']
+    #Formatear el nombre de la categoria antes de retornarlo
+    name = await format_name_category(data[0]['category_name'])
+    
+    return name
 
 async def get_count_products_by_category() -> list[dict]:
     """Get all categories with their product count"""

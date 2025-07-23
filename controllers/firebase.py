@@ -19,13 +19,40 @@ from models.userlogin import UserLogin
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Inicializar la app de Firebase Admin
-cred = credentials.Certificate("secrets/firebase-secret.json")
-firebase_admin.initialize_app(cred)
+# Inicializar la app de Firebase Admin usando secret de Key Vault
+async def initialize_firebase_admin():
+    """Initialize Firebase Admin SDK using credentials from Azure Key Vault"""
+    try:
+        # Verificar si ya está inicializada
+        if firebase_admin._apps:
+            logger.info("Firebase Admin ya está inicializada")
+            return
+            
+        # Obtener las credenciales de Firebase desde Key Vault
+        firebase_credentials_json = await get_secret_by_name("firebase-secret")
+        
+        # Convertir el JSON string a un diccionario
+        firebase_credentials = json.loads(firebase_credentials_json)
+        
+        # Crear las credenciales usando el diccionario
+        cred = credentials.Certificate(firebase_credentials)
+        
+        # Inicializar Firebase Admin
+        firebase_admin.initialize_app(cred)
+        logger.info("Firebase Admin inicializada exitosamente desde Key Vault")
+        
+    except Exception as e:
+        logger.error(f"Error al inicializar Firebase Admin: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error al inicializar Firebase Admin: {e}"
+        )
 
 load_dotenv()
 
 async def register_user_firebase(user: UserRegister) -> dict:
+    await initialize_firebase_admin()
+
     user_record = {}
     try:
         user_record = firebase_auth.create_user(
@@ -57,8 +84,9 @@ async def register_user_firebase(user: UserRegister) -> dict:
 
 
 async def login_user_firebase(user: UserLogin):
+    await initialize_firebase_admin()
+    
     # Autenticar usuario con Firebase Authentication usando la API REST
-#    api_key = os.getenv("FIREBASE_API_KEY")  # Reemplaza esto con tu apiKey de Firebase
     api_key = await get_secret_by_name("firebase-api-key")
     url = f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={api_key}"
     payload = {
