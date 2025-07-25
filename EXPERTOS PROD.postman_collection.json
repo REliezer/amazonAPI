@@ -17,10 +17,6 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{domain}}/category/name/?category_id=100",
 							"host": [
@@ -49,10 +45,6 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{domain}}/category/count",
 							"host": [
@@ -78,7 +70,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmaXJzdG5hbWUiOiJSb2RyaWdvIiwibGFzdG5hbWUiOiJGdW5lcyIsImVtYWlsIjoiYXNkQGVtYWlsLmhuIiwiYWN0aXZlIjp0cnVlLCJleHAiOjE3NTIxNjkzODgsImlhdCI6MTc1MjE2NTc4OH0.BiCYjgjUkt9zuxO0ZG3VXCFHwvgA92qJ1FO2BwAck6s",
+								"value": "bearer ",
 								"type": "text"
 							}
 						],
@@ -181,10 +173,6 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"rodrigofunes@hotmail.es\",\r\n    \"password\": \"Rodrigo!0909\"\r\n}"
-						},
 						"url": {
 							"raw": "{{domain}}/products",
 							"host": [
@@ -207,7 +195,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmaXJzdE5hbWUiOiJSb2RyaWdvIiwibGFzdE5hbWUiOiJGXHUwMGZhbmVzIiwiZW1haWwiOiJyb2RyaWdvZnVuZXNAaG90bWFpbC5lcyIsImFjdGl2ZSI6dHJ1ZSwiYWRtaW4iOnRydWUsImV4cCI6MTc1Mjg2Nzg2MCwiaWF0IjoxNzUyODY0MjYwfQ.f8gEntyB3pQ6crzAZ_LJihLeCqIkQ7ZExdEoAN5a3gc",
+								"value": "bearer ",
 								"type": "text"
 							}
 						],
@@ -242,17 +230,6 @@
 							"type": "noauth"
 						},
 						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmaXJzdE5hbWUiOiJSb2RyaWdvIiwibGFzdE5hbWUiOiJGXHUwMGZhbmVzIiwiZW1haWwiOiJyb2RyaWdvZnVuZXNAaG90bWFpbC5lcyIsImFjdGl2ZSI6dHJ1ZSwiYWRtaW4iOmZhbHNlLCJleHAiOjE3NTI3MDk5MTgsImlhdCI6MTc1MjcwNjMxOH0.g0e161egGsIYapuBBSpCp6H5kyQpFE4T62Vr-4X8WaE",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"asin\": \"UNAH2025-03\",\r\n  \"title\": \"Experts System\",\r\n  \"imgUrl\": \"string\",\r\n  \"productURL\": \"string\",\r\n  \"stars\": 0,\r\n  \"price\": 12,\r\n  \"category_id\": 8\r\n}"
-						},
 						"url": {
 							"raw": "{{domain}}/products/?category_id=91",
 							"host": [
